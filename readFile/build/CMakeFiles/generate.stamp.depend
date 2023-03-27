@@ -1,0 +1,20 @@
+# CMake generation dependency list for this directory.
+E:/ToyDemo/readFile/CMakeLists.txt
+E:/ToyDemo/readFile/build/CMakeFiles/3.26.0-rc4/CMakeCXXCompiler.cmake
+E:/ToyDemo/readFile/build/CMakeFiles/3.26.0-rc4/CMakeRCCompiler.cmake
+E:/ToyDemo/readFile/build/CMakeFiles/3.26.0-rc4/CMakeSystem.cmake
+G:/CMake/share/cmake-3.26/Modules/CMakeCXXInformation.cmake
+G:/CMake/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake
+G:/CMake/share/cmake-3.26/Modules/CMakeGenericSystem.cmake
+G:/CMake/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake
+G:/CMake/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake
+G:/CMake/share/cmake-3.26/Modules/CMakeRCInformation.cmake
+G:/CMake/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake
+G:/CMake/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake
+G:/CMake/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake
+G:/CMake/share/cmake-3.26/Modules/Compiler/MSVC-CXX.cmake
+G:/CMake/share/cmake-3.26/Modules/Compiler/MSVC.cmake
+G:/CMake/share/cmake-3.26/Modules/Platform/Windows-MSVC-CXX.cmake
+G:/CMake/share/cmake-3.26/Modules/Platform/Windows-MSVC.cmake
+G:/CMake/share/cmake-3.26/Modules/Platform/Windows.cmake
+G:/CMake/share/cmake-3.26/Modules/Platform/WindowsPaths.cmake
