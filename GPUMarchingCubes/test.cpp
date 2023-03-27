@@ -16,7 +16,7 @@
 uint nVerts = 0; // number of vertices
 
 int main(int argc, char **argv) {
-  initVoxels(argc, argv);
+  marching_cubes(argc, argv);
 
   return EXIT_SUCCESS;
 }
