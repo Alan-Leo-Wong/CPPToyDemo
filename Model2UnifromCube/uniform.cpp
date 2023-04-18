@@ -2,7 +2,7 @@
  * @Author: Poet 602289550@qq.com
  * @Date: 2023-04-10 22:34:06
  * @LastEditors: Poet 602289550@qq.com
- * @LastEditTime: 2023-04-14 16:56:58
+ * @LastEditTime: 2023-04-18 18:30:27
  * @FilePath: \OBJLoader\IN_OBJ.cpp
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置
  * 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
@@ -11,8 +11,10 @@
 #include <cmath>
 #include <cstdio>
 #include <fstream>
+#include <igl\readOBJ.h>
 #include <igl\readOFF.h>
 #include <igl\readPLY.h>
+#include <igl\writeOBJ.h>
 #include <igl\writeOFF.h>
 #include <igl\writePLY.h>
 #include <iostream>
@@ -85,15 +87,17 @@ int main() {
   //     "E:\\zc\\dualcontouring_uniform_model\\d4_smooth.ply";
   // const std::string out_file =
   //     "E:\\zc\\dualcontouring_uniform_model\\uniform\\d4_smooth_uniform.off";
-  const std::string in_file = "E:\\zc\\mon.off";
-  const std::string out_file = "E:\\zc\\origin_uniform_model\\mon_uniform.ply";
+  const std::string in_file = "E:\\zc\\uniform_4.18\\5mon\\monkey-mc.obj";
+  const std::string out_file =
+      "E:\\zc\\uniform_4.18\\5mon\\monkey-mc_uniform.obj";
   MatrixXd V;
   MatrixXi F;
   // igl::readPLY(in_file, V, F);
-  igl::readOFF(in_file, V, F);
+  // igl::readOFF(in_file, V, F);
+  igl::readOBJ(in_file, V, F);
   Transformer trans(V, 1.0);
   trans.Model2UnitCube(V);
-  igl::writePLY(out_file, V, F);
-  // igl::writeOFF(out_file, V, F);
+  // igl::writePLY(out_file, V, F);
+  igl::writeOBJ(out_file, V, F);
   return 0;
 }
