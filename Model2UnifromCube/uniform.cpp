@@ -2,12 +2,13 @@
  * @Author: Poet 602289550@qq.com
  * @Date: 2023-04-10 22:34:06
  * @LastEditors: Poet 602289550@qq.com
- * @LastEditTime: 2023-04-21 22:39:50
+ * @LastEditTime: 2023-04-24 16:39:34
  * @FilePath: \OBJLoader\IN_OBJ.cpp
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置
  * 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #include <Eigen\Dense>
+#include <array>
 #include <cmath>
 #include <cstdio>
 #include <fstream>
@@ -119,15 +120,15 @@ void Transformer::ZoomModel(MatrixXd &V) {
 }
 
 int main() {
-  // const std::string in_file =
-  //     "E:\\zc\\dualcontouring_uniform_model\\d4_smooth.ply";
-  // const std::string out_file =
-  //     "E:\\zc\\dualcontouring_uniform_model\\uniform\\d4_smooth_uniform.off";
   const std::string in_file =
-      "E:\\VSProjects\\SubReconstruction\\result\\flower\\5\\flower_mesh.obj";
+      "E:\\zc\\dualcontouring_uniform_model\\d4_smooth.ply";
   const std::string out_file =
-      "E:\\VSProjects\\SubReconstruction\\result\\flower\\5\\flower_"
-      "scale.obj";
+      "E:\\zc\\dualcontouring_uniform_model\\uniform\\d4_smooth_uniform.off";
+  // const std::string in_file =
+  // "E:\\VSProjects\\SubReconstruction\\result\\flower\\5\\flower_mesh.obj";
+  // const std::string out_file =
+  //     "E:\\VSProjects\\SubReconstruction\\result\\flower\\5\\flower_"
+  //     "scale.obj";
   MatrixXd V;
   MatrixXi F;
   // igl::readPLY(in_file, V, F);
@@ -137,5 +138,6 @@ int main() {
   trans.Model2UnitCube(V);
   // igl::writePLY(out_file, V, F);
   igl::writeOBJ(out_file, V, F);
+
   return 0;
 }
