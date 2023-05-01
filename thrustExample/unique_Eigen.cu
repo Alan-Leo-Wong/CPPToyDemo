@@ -10,6 +10,14 @@
 #define MORTON_32_FLAG 0x80000000
 using thrust_edge = thrust::pair<Eigen::Vector3f, Eigen::Vector3f>;
 using type = thrust::pair<thrust_edge, uint32_t>;
+using node_vertex_type = thrust::pair<Eigen::Vector3d, uint32_t>;
+
+struct uniqueVert {
+  __host__ __device__ bool operator()(const node_vertex_type &a,
+                                      const node_vertex_type &b) {
+    return (a.first).isApprox(b.first, 1e-9);
+  }
+};
 
 struct uniqueEdge {
   __host__ __device__ bool operator()(const type &a, const type &b) {
@@ -37,7 +45,8 @@ int main() {
                                         Eigen::Vector3f(2.0, 2.0, 2.0)),
                             3);
 
-  auto newEnd = thrust::unique(d_nodeEdgeArray.begin(), d_nodeEdgeArray.end(),
+  auto newEnd = thrust::unique(d_nodeEdgeArray.begin(),
+  d_nodeEdgeArray.end(),
                                uniqueEdge());
   newEnd = thrust::unique(d_nodeEdgeArray.begin(), d_nodeEdgeArray.end(),
                           uniqueEdge2());
@@ -46,8 +55,25 @@ int main() {
   d_nodeEdgeArray.shrink_to_fit();
   for (int i = 0; i < d_nodeEdgeArray.size(); ++i) {
     type p = d_nodeEdgeArray[i];
-    std::cout << p.first.first.transpose() << ", " << p.first.second.transpose()
+    std::cout << p.first.first.transpose() << ", " <<
+    p.first.second.transpose()
               << ", " << p.second << std::endl;
   }
+
+  // thrust::device_vector<node_vertex_type> d_nodeVertArray(3);
+  // d_nodeVertArray[0] = thrust::make_pair(Eigen::Vector3d(0.0, 0.0, 0.0), 1);
+  // d_nodeVertArray[1] = thrust::make_pair(Eigen::Vector3d(0.0, 0.0, 0.0), 2);
+  // d_nodeVertArray[2] = thrust::make_pair(Eigen::Vector3d(1.0, 1.0, 1.0), 3);
+
+  // auto newEnd = thrust::unique(d_nodeVertArray.begin(), d_nodeVertArray.end(),
+  //                              uniqueVert());
+  // const size_t newSize = newEnd - d_nodeVertArray.begin();
+  // d_nodeVertArray.resize(newSize);
+  // d_nodeVertArray.shrink_to_fit();
+  // for (int i = 0; i < d_nodeVertArray.size(); ++i) {
+  //   node_vertex_type p = d_nodeVertArray[i];
+  //   std::cout << p.first.transpose() << ", " << p.second << std::endl;
+  // }
+
   return 0;
 }
