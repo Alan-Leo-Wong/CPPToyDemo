@@ -16,7 +16,7 @@ if(TARGET Eigen3::Eigen)
 endif()
 
 # target_include_directories(MC PRIVATE include)
-add_executable(TEST sort_Eigen.cu)
+add_executable(TEST unique_Eigen.cu)
 target_compile_features(TEST PRIVATE cuda_std_17)
 target_link_libraries(TEST PUBLIC Eigen3::Eigen)
 
