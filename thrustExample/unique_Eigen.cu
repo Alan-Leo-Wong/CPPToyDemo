@@ -82,7 +82,8 @@ int main() {
   // d_nodeVertArray[1] = thrust::make_pair(Eigen::Vector3d(0.0, 0.0, 0.0), 2);
   // d_nodeVertArray[2] = thrust::make_pair(Eigen::Vector3d(1.0, 1.0, 1.0), 3);
 
-  // auto newEnd = thrust::unique(d_nodeVertArray.begin(), d_nodeVertArray.end(),
+  // auto newEnd = thrust::unique(d_nodeVertArray.begin(),
+  // d_nodeVertArray.end(),
   //                              uniqueVert());
   // const size_t newSize = newEnd - d_nodeVertArray.begin();
   // d_nodeVertArray.resize(newSize);

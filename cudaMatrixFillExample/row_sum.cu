@@ -452,6 +452,8 @@ void testMulSum(const unsigned int &rows, const unsigned int &cols,
     CUDA_CHECK(cudaMemcpyAsync(res.data() + a_offset, d_res.data().get(),
                                sizeof(double) * a_elems, cudaMemcpyDeviceToHost,
                                streams[i]));
+    d_res.clear();
+    d_res.shrink_to_fit();
   }
 
   for (int i = 0; i < MAX_NUM_STREAMS; i++)
