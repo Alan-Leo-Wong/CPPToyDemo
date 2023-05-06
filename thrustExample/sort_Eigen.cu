@@ -1,5 +1,8 @@
 #include <Eigen/Dense>
+#include <algorithm>
+#include <driver_types.h>
 #include <iostream>
+#include <thrust/binary_search.h>
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
 #include <thrust/pair.h>
@@ -57,19 +60,38 @@ struct sortVert {
 
 struct transformEdge {
   __host__ __device__ node_edge_type operator()(const node_edge_type &a) {
-    node_edge_type _p;
     if (lessPoint<Eigen::Vector3d>{}(a.first.first, a.first.second) == -1) {
+      node_edge_type _p;
       //   printf("a.first.second = (%lf, %lf, %lf)\n", a.first.second.x(),
       //          a.first.second.y(), a.first.second.z());
       _p.first.first = a.first.second, _p.first.second = a.first.first;
       _p.second = a.second;
-    }
-    return _p;
+      return _p;
+    } else
+      return a;
   }
 };
 
 struct sortEdge {
+  __host__ __device__ int parallelAxis(const node_edge_type &e) {
+    Eigen::Vector3d dir = e.first.second - e.first.first;
+    if (dir.cross(Eigen::Vector3d(1, 0, 0))
+            .isApprox(Eigen::Vector3d(0, 0, 0), 1e-6)) // 与x轴平行
+      return 1;
+    else if (dir.cross(Eigen::Vector3d(0, 1, 0))
+                 .isApprox(Eigen::Vector3d(0, 0, 0), 1e-6)) // 与y轴平行
+      return 2;
+    else if (dir.cross(Eigen::Vector3d(0, 0, 1))
+                 .isApprox(Eigen::Vector3d(0, 0, 0), 1e-6)) // 与z轴平行
+      return 3;
+  }
+
   __host__ __device__ bool operator()(node_edge_type &a, node_edge_type &b) {
+    int _p0_case = parallelAxis(a);
+    int _p1_case = parallelAxis(b);
+    if (_p0_case != _p1_case)
+      return _p0_case < _p1_case;
+
     int _t_0 = lessPoint<Eigen::Vector3d>{}(a.first.first, b.first.first);
     if (_t_0 == 0) {
       int _t_1 = lessPoint<Eigen::Vector3d>{}(a.first.second, b.first.second);
@@ -93,70 +115,111 @@ struct uniqueVert {
   }
 };
 
+struct lessYVal {
+  bool operator()(const node_edge_type &a, const node_edge_type &b) {
+    std::cout << "b.first.first = " << b.first.first.transpose()
+              << ", b.first.second = " << b.first.second.transpose()
+              << ", a.first.second = " << a.first.second.transpose()
+              << std::endl;
+    return b.first.first.y() > a.first.second.y();
+  }
+};
+
 int main() {
-  thrust::device_vector<node_edge_type> d_nodeEdgeArray(3);
+  thrust::device_vector<node_edge_type> d_nodeEdgeArray(5);
   d_nodeEdgeArray[0] =
       node_edge_type(thrust_edge_type(Eigen::Vector3d(0.0, 0.0, 0.0),
-                                      Eigen::Vector3d(1.0, 1.0, 1.0)),
+                                      Eigen::Vector3d(2.0, 0.0, 0.0)),
                      1);
   d_nodeEdgeArray[1] =
       node_edge_type(thrust_edge_type(Eigen::Vector3d(0.0, 0.0, 0.0),
-                                      Eigen::Vector3d(1.0, 0.5, 1.0)),
+                                      Eigen::Vector3d(0.0, 2.0, 0.0)),
                      0);
   d_nodeEdgeArray[2] =
-      node_edge_type(thrust_edge_type(Eigen::Vector3d(1.0, 1.0, 1.0),
-                                      Eigen::Vector3d(2.0, 2.0, 2.0)),
+      node_edge_type(thrust_edge_type(Eigen::Vector3d(0.0, 0.0, 0.0),
+                                      Eigen::Vector3d(0.0, 0.0, 2.0)),
                      3);
 
-  //   thrust::device_vector<node_edge_type> td_nodeEdgeArray(3);
-  //   thrust::transform(d_nodeEdgeArray.begin(), d_nodeEdgeArray.end(),
-  //                     td_nodeEdgeArray.begin(), transformEdge());
-  //   for (int i = 0; i < td_nodeEdgeArray.size(); ++i) {
-  //     node_edge_type p = td_nodeEdgeArray[i];
-  //     std::cout << p.first.first.transpose() << ", " <<
-  //     p.first.second.transpose()
-  //               << ", " << p.second << std::endl;
-  //   }
+  d_nodeEdgeArray[3] =
+      node_edge_type(thrust_edge_type(Eigen::Vector3d(0.0, 2.0, 2.0),
+                                      Eigen::Vector3d(0.0, 3.0, 2.0)),
+                     3);
 
-  //   std::cout << "=========\n";
+  d_nodeEdgeArray[4] =
+      node_edge_type(thrust_edge_type(Eigen::Vector3d(0.0, 1.0, 0.0),
+                                      Eigen::Vector3d(0.0, 2.0, 0.0)),
+                     3);
 
-  thrust::sort(d_nodeEdgeArray.begin(), d_nodeEdgeArray.end(), sortEdge());
-  //   auto newEnd = thrust::unique(d_nodeEdgeArray.begin(),
-  //   d_nodeEdgeArray.end(),
-  //                                uniqueEdge());
-  //   newEnd = thrust::unique(d_nodeEdgeArray.begin(), d_nodeEdgeArray.end(),
-  //                           uniqueEdge2());
-  //   const size_t newSize = newEnd - d_nodeEdgeArray.begin();
-  //   d_nodeEdgeArray.resize(newSize);
-  //   d_nodeEdgeArray.shrink_to_fit();
-  for (int i = 0; i < d_nodeEdgeArray.size(); ++i) {
-    node_edge_type p = d_nodeEdgeArray[i];
+  thrust::device_vector<node_edge_type> td_nodeEdgeArray(5);
+  thrust::transform(d_nodeEdgeArray.begin(), d_nodeEdgeArray.end(),
+                    td_nodeEdgeArray.begin(), transformEdge());
+  for (int i = 0; i < td_nodeEdgeArray.size(); ++i) {
+    node_edge_type p = td_nodeEdgeArray[i];
     std::cout << p.first.first.transpose() << ", " << p.first.second.transpose()
-              << ", " << p.second << std::endl;
+              << std::endl;
   }
 
-  //   thrust::device_vector<node_vertex_type> d_nodeVertArray(3);
-  //   d_nodeVertArray[0] = thrust::make_pair(Eigen::Vector3d(0.0, 0.0, 0.0),
-  //   3); d_nodeVertArray[1] =
-  //   thrust::make_pair(Eigen::Vector3d(1.0, 1.0, 1.0), 3); d_nodeVertArray[2]
-  //   = thrust::make_pair(Eigen::Vector3d(0.0, 0.0, 0.0), 2);
+  std::cout << "=========\n";
 
-  //   thrust::sort(d_nodeVertArray.begin(), d_nodeVertArray.end(), sortVert());
-  //   for (int i = 0; i < d_nodeVertArray.size(); ++i) {
-  //     node_vertex_type p = d_nodeVertArray[i];
-  //     std::cout << p.first.transpose() << ", " << p.second << std::endl;
-  //   }
-  //   std::cout << "=========\n";
-  //   auto newEnd = thrust::unique(d_nodeVertArray.begin(),
-  //   d_nodeVertArray.end(),
-  //                                uniqueVert());
-  //   const size_t newSize = newEnd - d_nodeVertArray.begin();
-  //   d_nodeVertArray.resize(newSize);
-  //   d_nodeVertArray.shrink_to_fit();
-  //   for (int i = 0; i < d_nodeVertArray.size(); ++i) {
-  //     node_vertex_type p = d_nodeVertArray[i];
-  //     std::cout << p.first.transpose() << ", " << p.second << std::endl;
-  //   }
+  thrust::sort(td_nodeEdgeArray.begin(), td_nodeEdgeArray.end(), sortEdge());
+  for (int i = 0; i < td_nodeEdgeArray.size(); ++i) {
+    node_edge_type p = td_nodeEdgeArray[i];
+    std::cout << p.first.first.transpose() << ", " << p.first.second.transpose()
+              << std::endl;
+  }
+  std::cout << "=========\n";
+
+  // std::vector<node_edge_type> h_nodeEdgeArray(5);
+  // cudaMemcpy(h_nodeEdgeArray.data(), td_nodeEdgeArray.data().get(),
+  //            sizeof(node_edge_type) * 5, cudaMemcpyDeviceToHost);
+  thrust::host_vector<node_edge_type> h_nodeEdgeArray = td_nodeEdgeArray;
+
+  node_edge_type a;
+  a.first.first = Eigen::Vector3d(0, 0, 0);
+  a.first.second = Eigen::Vector3d(0, 1.5, 0);
+  a.second = 0;
+  auto upper = std::upper_bound(h_nodeEdgeArray.begin(), h_nodeEdgeArray.end(),
+                                a, lessYVal());
+  if (upper != h_nodeEdgeArray.end()) {
+    std::cout << (*upper).first.first.transpose();
+  }
+
+  // auto newEnd = thrust::unique(d_nodeEdgeArray.begin(),
+  // d_nodeEdgeArray.end(),
+  //                              uniqueEdge());
+  // newEnd = thrust::unique(d_nodeEdgeArray.begin(), d_nodeEdgeArray.end(),
+  //                         uniqueEdge2());
+  // const size_t newSize = newEnd - d_nodeEdgeArray.begin();
+  // d_nodeEdgeArray.resize(newSize);
+  // d_nodeEdgeArray.shrink_to_fit();
+  // for (int i = 0; i < d_nodeEdgeArray.size(); ++i) {
+  //   node_edge_type p = d_nodeEdgeArray[i];
+  //   std::cout << p.first.first.transpose() << ", " <<
+  //   p.first.second.transpose()
+  //             << ", " << p.second << std::endl;
+  // }
+
+  // thrust::device_vector<node_vertex_type> d_nodeVertArray(3);
+  // d_nodeVertArray[0] = thrust::make_pair(Eigen::Vector3d(0.0, 0.0, 0.0), 3);
+  // d_nodeVertArray[1] = thrust::make_pair(Eigen::Vector3d(0.0, 1.0, 0.0), 3);
+  // d_nodeVertArray[2] = thrust::make_pair(Eigen::Vector3d(0.0, 0.0, 1.0), 2);
+
+  // thrust::sort(d_nodeVertArray.begin(), d_nodeVertArray.end(), sortVert());
+  // for (int i = 0; i < d_nodeVertArray.size(); ++i) {
+  //   node_vertex_type p = d_nodeVertArray[i];
+  //   std::cout << p.first.transpose() << ", " << p.second << std::endl;
+  // }
+  // std::cout << "=========\n";
+  // auto newEnd = thrust::unique(d_nodeVertArray.begin(),
+  // d_nodeVertArray.end(),
+  //                              uniqueVert());
+  // const size_t newSize = newEnd - d_nodeVertArray.begin();
+  // d_nodeVertArray.resize(newSize);
+  // d_nodeVertArray.shrink_to_fit();
+  // for (int i = 0; i < d_nodeVertArray.size(); ++i) {
+  //   node_vertex_type p = d_nodeVertArray[i];
+  //   std::cout << p.first.transpose() << ", " << p.second << std::endl;
+  // }
 
   return 0;
 }
