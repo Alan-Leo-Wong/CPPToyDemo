@@ -1,0 +1,8 @@
+CompileFlags:
+  Add:
+    - -std=c++17
+    - --cuda-path=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1
+    - --cuda-gpu-arch=sm_61
+    - -LC:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\lib\x64
+    - -IC:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\include
+    - -IF:\CG3rdParty\eigen-3.4.0
