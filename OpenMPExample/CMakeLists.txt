@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenMP REQUIRED)
 
-add_executable(TEST main.cpp)
+add_executable(TEST collapse_loop.cpp)
 
 if(OpenMP_CXX_FOUND)
     target_link_libraries(TEST PUBLIC OpenMP::OpenMP_CXX)

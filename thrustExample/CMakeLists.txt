@@ -17,7 +17,14 @@ endif()
 
 # target_include_directories(MC PRIVATE include)
 add_executable(TEST sort_Eigen.cu)
+
+find_package(OpenMP REQUIRED)
+
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(TEST PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
 target_compile_features(TEST PRIVATE cuda_std_17)
 target_link_libraries(TEST PUBLIC Eigen3::Eigen)
 
-target_compile_features(TEST PRIVATE cxx_std_17)
+target_compile_features(TEST PRIVATE cxx_std_20)
