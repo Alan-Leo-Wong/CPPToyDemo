@@ -88,14 +88,14 @@ __host__ __device__ int parallelAxis(const node_edge_type &e) {
 
 struct sortEdge {
   __host__ __device__ bool operator()(node_edge_type &a, node_edge_type &b) {
-    // int _p0_case = parallelAxis(a);
-    // int _p1_case = parallelAxis(b);
-    // if (_p0_case != _p1_case)
-    //   return _p0_case < _p1_case;
+    int _p0_case = parallelAxis(a);
+    int _p1_case = parallelAxis(b);
+    if (_p0_case != _p1_case)
+      return _p0_case < _p1_case;
 
-    int _t_0 = lessPoint<Eigen::Vector3d>{}(a.first.first, b.first.first);
+    int _t_0 = lessPoint<Eigen::Vector3d>{}(a.first.second, b.first.second);
     if (_t_0 == 0) {
-      int _t_1 = lessPoint<Eigen::Vector3d>{}(a.first.second, b.first.second);
+      int _t_1 = lessPoint<Eigen::Vector3d>{}(a.first.first, b.first.first);
       if (_t_1 == 0)
         return a.second < b.second;
       else if (_t_1 == 1)
@@ -168,6 +168,7 @@ int main() {
   std::vector<node_edge_type> h_nodeEdgeArray(5);
   cudaMemcpy(h_nodeEdgeArray.data(), td_nodeEdgeArray.data().get(),
              sizeof(node_edge_type) * 5, cudaMemcpyDeviceToHost);
+  std::sort(h_nodeEdgeArray.begin(), h_nodeEdgeArray.end(), sortEdge());
 
   std::vector<node_edge_type> x_nodeEdgeArray;
   std::vector<node_edge_type> y_nodeEdgeArray;

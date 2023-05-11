@@ -16,8 +16,9 @@
 
 int main() {
   std::vector<int> vec(2, 1);
-  std::exclusive_scan(vec.begin(), vec.end(), vec.begin(), 0);
-  for (int i = 0; i < vec.size(); ++i)
-    std::cout << vec[i] << std::endl;
+  std::vector<int> dest_vec(2);
+  std::exclusive_scan(vec.begin(), vec.end(), dest_vec.begin(), 0);
+  for (int i = 0; i < dest_vec.size(); ++i)
+    std::cout << dest_vec[i] << std::endl;
   return 0;
 }
