@@ -18,7 +18,7 @@ endif(OpenMP_CXX_FOUND)
 
 message(${OpenMP_CXX_FLAGS})
 
-add_executable(main less_operator.cpp)
+add_executable(main random_matrix.cpp)
 
 # target_include_directories(main PRIVATE include)
 if(TARGET Eigen3::Eigen)

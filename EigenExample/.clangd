@@ -1,0 +1,4 @@
+CompileFlags:
+  Add:
+    - -std=c++17
+    - -IE:\3rdParty\eigen-3.4.0
