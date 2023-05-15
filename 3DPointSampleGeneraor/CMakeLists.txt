@@ -18,7 +18,7 @@ endif(OpenMP_CXX_FOUND)
 
 message(${OpenMP_CXX_FLAGS})
 
-add_executable(main box_scale_translate.cpp)
+add_executable(main blue_noise_sample_matrix_halton.cpp)
 
 # target_include_directories(main PRIVATE include)
 if(TARGET Eigen3::Eigen)
