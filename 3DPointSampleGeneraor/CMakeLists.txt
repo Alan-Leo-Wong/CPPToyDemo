@@ -10,15 +10,15 @@ find_package(Eigen3 REQUIRED CONFIG)
 # set(EIGEN3_INCLUDE_DIR "E:\\3rdParty\\eigen-3.4.0")
 
 # add_subdirectory(include)
-find_package(OpenMP REQUIRED)
+# find_package(OpenMP REQUIRED)
 
-if(OpenMP_CXX_FOUND)
-    list(APPEND CMAKE_CXX_FLAGS ${OpenMP_CXX_FLAGS})
-endif(OpenMP_CXX_FOUND)
+# if(OpenMP_CXX_FOUND)
+#     list(APPEND CMAKE_CXX_FLAGS ${OpenMP_CXX_FLAGS})
+# endif(OpenMP_CXX_FOUND)
 
 message(${OpenMP_CXX_FLAGS})
 
-add_executable(main blue_noise_sample_matrix_halton.cpp)
+add_executable(main gaussian_sample.cpp)
 
 # target_include_directories(main PRIVATE include)
 if(TARGET Eigen3::Eigen)

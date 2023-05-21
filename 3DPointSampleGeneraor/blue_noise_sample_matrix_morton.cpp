@@ -74,7 +74,7 @@ int main() {
   //               << std::endl;
   //   }
 
-  std::ofstream out("E:\\ToyDemo\\EigenExample\\blue_noise_points.xyz");
+  std::ofstream out(".\\blue_noise_points.xyz");
   for (const auto &sample : blueNoiseSamples) {
     out << sample.x << " " << sample.y << " " << sample.z << std::endl;
   }
