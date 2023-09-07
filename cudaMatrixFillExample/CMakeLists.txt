@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.18)
 
-# if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-# message(STATUS "Failed to detect a default CUDA architecture. Use '-DCMAKE_CUDA_ARCHITECTURES=XX' to specify the default value.")
-# set(CMAKE_CUDA_ARCHITECTURES 86)
-# endif()
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+message(STATUS "Failed to detect a default CUDA architecture. Use '-DCMAKE_CUDA_ARCHITECTURES=XX' to specify the default value.")
+set(CMAKE_CUDA_ARCHITECTURES 86)
+endif()
 project(THRUST_EXAMPLE LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
