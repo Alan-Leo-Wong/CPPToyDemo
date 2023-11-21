@@ -17,14 +17,23 @@ constexpr int rows = 2;
 
 int main() {
   std::vector<Eigen::Vector3d> vec;
+  std::vector<double> vec_2;
   vec.reserve(rows);
-  for (int i = 0; i < rows; ++i)
+  vec_2.reserve(rows * 3);
+  for (int i = 0; i < rows; ++i) {
     vec[i] = Eigen::Vector3d(i - 1, i, i + 1);
+    vec_2[i * 3] = i - 1;
+    vec_2[i * 3 + 1] = i;
+    vec_2[i * 3 + 2] = i + 1;
+  }
 
   Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor>> mat(
       reinterpret_cast<double *>(vec.data()), rows, 3);
 
+  Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor>> mat_2(
+      reinterpret_cast<double *>(vec_2.data()), rows, 3);
+
   for (int i = 0; i < rows; ++i)
-    std::cout << mat.row(i) << std::endl;
+    std::cout << mat_2.row(i) << std::endl;
   return 0;
 }

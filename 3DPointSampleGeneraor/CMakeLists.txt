@@ -16,9 +16,9 @@ find_package(Eigen3 REQUIRED CONFIG)
 #     list(APPEND CMAKE_CXX_FLAGS ${OpenMP_CXX_FLAGS})
 # endif(OpenMP_CXX_FOUND)
 
-message(${OpenMP_CXX_FLAGS})
+# message(${OpenMP_CXX_FLAGS})
 
-add_executable(main gaussian_sample.cpp)
+add_executable(main blue_noise_sample_matrix_halton.cpp)
 
 # target_include_directories(main PRIVATE include)
 if(TARGET Eigen3::Eigen)

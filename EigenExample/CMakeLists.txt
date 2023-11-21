@@ -18,14 +18,16 @@ endif(OpenMP_CXX_FOUND)
 
 message(${OpenMP_CXX_FLAGS})
 
-add_executable(main get_absolute_min.cpp)
+# add_executable(main get_absolute_min.cpp)
+# add_executable(main eigenVectorToMatrix.cpp)
+add_executable(main 2Dand3D.cpp)
 
 # target_include_directories(main PRIVATE include)
 if(TARGET Eigen3::Eigen)
     message(STATUS "Eigen3 v${EIGEN3_VERSION_STRING} found in ${EIGEN3_INCLUDE_DIR}")
     target_link_libraries(main Eigen3::Eigen)
 
-    # message(STATUS ${EIGEN3_INCLUDE_DIR})
+    message(STATUS ${EIGEN3_INCLUDE_DIR})
     # include_directories(${EIGEN3_INCLUDE_DIR})
 
     # link_libraries(Eigen3::Eigen)
