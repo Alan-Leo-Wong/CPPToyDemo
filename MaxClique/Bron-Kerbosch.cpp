@@ -3,7 +3,7 @@
  * @authorEmail: leiw1006@gmail.com
  * @Date: 2023-11-29 14:49:20
  * @LastEditors: Poet 602289550@qq.com
- * @LastEditTime: 2023-11-29 18:59:04
+ * @LastEditTime: 2023-11-29 21:51:00
  * @FilePath: \MaxClique\Bron-Kerbosch.cpp
  * @Description:
  */
@@ -57,6 +57,8 @@ void trivalDFS(int d, int an, int sn, int nn) {
       printf("%d ", all[d][j]);
     printf("\n");
   }
+  if (sn == 0)
+    return;
 
   for (int i = 0; i < sn; ++i) { // 遍历 P 中的结点
     int v = some[d][i]; // 取出 P 中的第 i 个结点作为备选节点
@@ -112,6 +114,8 @@ void pivotDFS(int d, int an, int sn, int nn) {
       printf("%d ", all[d][j]);
     printf("\n");
   }
+  if (sn == 0)
+    return;
 
   // 选取 Pivot 结点(Pivot 结点的邻居结点数量越多, 递归次数越少)
   int u = some[d][0];
@@ -168,9 +172,21 @@ void BronKerbosch(std::list<T> &R, std::list<T> &P, std::list<T> &X,
   if (P.empty() && X.empty()) {
     all_max_clique.emplace_back(R);
   }
+  if (P.empty())
+    return;
 
-  const T pivot = *P.begin();
+  auto pivot_iter = P.begin();
+  int pivot = *pivot_iter;
+  while (pivot == -1 && ++pivot_iter != P.end()) {
+    pivot = *pivot_iter;
+  }
+  if (pivot_iter == P.end()) {
+    std::cerr << "Error! NO VALID PIVOT IN 'computeMaxClique'!";
+    exit(1);
+  }
   for (auto &p_1 : P) {
+    if (p_1 == -1)
+      continue;
     if (mp[pivot][p_1])
       continue;
 
@@ -179,19 +195,19 @@ void BronKerbosch(std::list<T> &R, std::list<T> &P, std::list<T> &X,
 
     std::list<T> next_P;
     for (const auto &p_2 : P)
-      if (mp[p_1][p_2])
+      if (p_2 != -1 && mp[p_1][p_2])
         next_P.emplace_back(p_2);
 
     std::list<T> next_X;
     for (const auto &x : X)
-      if (mp[p_1][x])
+      if (x != -1 && mp[p_1][x])
         next_X.emplace_back(x);
 
     BronKerbosch(next_R, next_P, next_X, all_max_clique);
 
     // iter = P.erase(iter);
     X.emplace_back(p_1);
-    p_1 = 0;
+    p_1 = -1;
   }
 }
 
