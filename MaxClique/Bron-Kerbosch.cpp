@@ -2,15 +2,18 @@
  * @Author: WangLei
  * @authorEmail: leiw1006@gmail.com
  * @Date: 2023-11-29 14:49:20
- * @LastEditors: WangLei
- * @LastEditTime: 2023-11-29 16:25:06
+ * @LastEditors: Poet 602289550@qq.com
+ * @LastEditTime: 2023-11-29 18:59:04
  * @FilePath: \MaxClique\Bron-Kerbosch.cpp
  * @Description:
  */
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <iterator>
+#include <list>
 #include <system_error>
+#include <vector>
 using namespace std;
 
 /**
@@ -119,10 +122,12 @@ void pivotDFS(int d, int an, int sn, int nn) {
     // 如果是邻居结点, 就直接跳过下面的程序, 进行下一轮的循环。
     // 显然能让程序运行下去的, 只有两种, 一种是 v 就是 u 结点本身,
     // 另一种则是 v 不是 u 的邻居结点
+    // 从 u 的邻居节点找下去一定能找到包括 u 的极大团(即通过后面 P 和 X 的更新),
+    // 所以没必要再从 u 的邻居作为"首发"往下找了
     if (mp[u][v])
       continue;
-    printf("u = %d, v = %d\n", u, v);
-    system("pause");
+    // printf("u = %d, v = %d\n", u, v);
+    // system("pause");
 
     // 将当前层的 R 集合中的节点 加上 v , 作为下一层的集合 R
     for (int j = 0; j < an; ++j)
@@ -157,6 +162,39 @@ void pivotDFS(int d, int an, int sn, int nn) {
   }
 }
 
+template <typename T>
+void BronKerbosch(std::list<T> &R, std::list<T> &P, std::list<T> &X,
+                  std::vector<std::list<T>> &all_max_clique) {
+  if (P.empty() && X.empty()) {
+    all_max_clique.emplace_back(R);
+  }
+
+  const T pivot = *P.begin();
+  for (auto &p_1 : P) {
+    if (mp[pivot][p_1])
+      continue;
+
+    std::list<T> next_R = R;
+    next_R.emplace_back(p_1);
+
+    std::list<T> next_P;
+    for (const auto &p_2 : P)
+      if (mp[p_1][p_2])
+        next_P.emplace_back(p_2);
+
+    std::list<T> next_X;
+    for (const auto &x : X)
+      if (mp[p_1][x])
+        next_X.emplace_back(x);
+
+    BronKerbosch(next_R, next_P, next_X, all_max_clique);
+
+    // iter = P.erase(iter);
+    X.emplace_back(p_1);
+    p_1 = 0;
+  }
+}
+
 void work() {
   ans = 0;
 
@@ -167,6 +205,17 @@ void work() {
   // 初始时 R 集合和 X 集合均为空
   // trivalDFS(0, 0, n, 0);
   pivotDFS(0, 0, n, 0);
+}
+
+template <typename T> void exec(std::vector<std::list<T>> &all_max_clique) {
+  std::list<T> R;
+  std::list<T> P;
+  std::list<T> X;
+
+  for (int i = 0; i < n; ++i)
+    P.emplace_back(node[i]);
+
+  BronKerbosch(R, P, X, all_max_clique);
 }
 
 /**
@@ -207,9 +256,19 @@ int main() {
       mp[u][v] = mp[v][u] = 1;
     }
 
-    work();
+    // work();
+    std::vector<std::list<int>> all_max_clique;
+    exec<int>(all_max_clique);
 
-    printf("The number of max cliques = %d\n", ans);
+    // printf("The number of max cliques = %d\n", ans);
+    printf("The number of max cliques = %lld\n", all_max_clique.size());
+    for (const auto &max_clique : all_max_clique) {
+      std::cout << "max clique: ";
+      for (const auto &val : max_clique) {
+        std::cout << val << " ";
+      }
+      std::cout << "\n";
+    }
   }
   return 0;
 }
