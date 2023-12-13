@@ -12,11 +12,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # find_package(Eigen3 REQUIRED CONFIG)
 
 # if(TARGET Eigen3::Eigen)
-#     message(STATUS "Eigen3 v${EIGEN3_VERSION_STRING} found in ${EIGEN3_INCLUDE_DIR}")
+# message(STATUS "Eigen3 v${EIGEN3_VERSION_STRING} found in ${EIGEN3_INCLUDE_DIR}")
 # endif()
 
 # target_include_directories(MC PRIVATE include)
-add_executable(TEST main.cpp test.cpp)
+# add_executable(TEST main.cpp test.cpp)
+add_executable(TEST heap_example.cpp)
 
 # target_compile_features(TEST PRIVATE cuda_std_17)
 # target_link_libraries(TEST PUBLIC Eigen3::Eigen)
