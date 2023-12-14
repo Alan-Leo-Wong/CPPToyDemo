@@ -2,11 +2,12 @@
  * @Author: Alan Wang leiw1006@gmail.com
  * @Date: 2023-12-13 21:45:37
  * @LastEditors: Alan Wang leiw1006@gmail.com
- * @LastEditTime: 2023-12-13 22:48:27
+ * @LastEditTime: 2023-12-14 16:59:09
  * @FilePath: \cpp_stdExample\heap_example.cpp
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置
  * 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
+#include <cstdlib>
 #include <iostream>
 #include <queue>
 #include <set>
@@ -28,6 +29,11 @@ template <typename T> struct IndexedValue {
   // 按照值进行降序排序
   static bool des_cmp(const IndexedValue<T> &a, const IndexedValue<T> &b) {
     return a.value > b.value;
+  }
+
+  bool operator<(const IndexedValue<T> &other) const {
+    return index == other.index ? (value < other.value) : (index < other.index);
+    // return asc_cmp(*this, other);
   }
 
   template <typename T1>
@@ -62,54 +68,87 @@ int main() {
   in_data.emplace_back(IndexedValue<int>(2, 2));
   in_data.emplace_back(IndexedValue<int>(3, 3));
 
-  std::priority_queue<IndexedValue<int>, std::vector<IndexedValue<int>>,
-                      decltype(&IndexedValue<int>::des_cmp)>
-      minHeap(&IndexedValue<int>::des_cmp);
-  for (const auto &data : in_data) {
-    minHeap.push(data);
-  }
+  // std::priority_queue<IndexedValue<int>, std::vector<IndexedValue<int>>,
+  //                     decltype(&IndexedValue<int>::des_cmp)>
+  //     minHeap(&IndexedValue<int>::des_cmp);
+  // for (const auto &data : in_data) {
+  //   minHeap.push(data);
+  // }
 
-  std::cout << "Min Heap:" << std::endl;
-  while (!minHeap.empty()) {
-    std::cout << minHeap.top() << std::endl;
-    minHeap.pop();
-  }
+  // std::cout << "Min Heap:" << std::endl;
+  // while (!minHeap.empty()) {
+  //   std::cout << minHeap.top() << std::endl;
+  //   minHeap.pop();
+  // }
 
-  std::cout << "==========\n";
+  // std::cout << "==========\n";
+
+  // std::priority_queue<IndexedValue<int>, std::vector<IndexedValue<int>>,
+  //                     decltype(&IndexedValue<int>::asc_cmp)>
+  //     maxHeap(&IndexedValue<int>::asc_cmp);
+  // for (const auto &data : in_data) {
+  //   maxHeap.push(data);
+  // }
+  // std::cout << "Max Heap:" << std::endl;
+  // while (!maxHeap.empty()) {
+  //   std::cout << maxHeap.top() << std::endl;
+  //   maxHeap.pop();
+  // }
+  // std::cout << "==========\n";
+
+  // /* 想要达到在数据更新后重新排序的效果, 可以使用 set
+  // 的快速删除与重新插入来实现
+  //  */
+  // std::set<IndexedValue<int>, decltype(&IndexedValue<int>::des_cmp)> maxSet(
+  //     IndexedValue<int>::des_cmp);
+  // maxSet.insert(in_data.begin(), in_data.end());
+  // std::cout << "Max Set(Original Data):" << std::endl;
+  // for (const auto &data : maxSet) {
+  //   std::cout << data << std::endl;
+  // }
+  // std::cout << "==========\n";
+  // // 修改元素值
+  // auto it = maxSet.find(IndexedValue<int>(0, 0));
+  // if (it != maxSet.end()) {
+  //   maxSet.erase(it);
+  //   maxSet.insert(IndexedValue<int>(0, 4));
+  // }
+  // std::cout << "Max Set(Modified Data):" << std::endl;
+  // for (const auto &data : maxSet) {
+  //   std::cout << data << std::endl;
+  // }
+  // std::cout << "==========\n";
+
+  std::set<IndexedValue<int>> minSet;
+  minSet.insert(in_data.begin(), in_data.end());
 
   std::priority_queue<IndexedValue<int>, std::vector<IndexedValue<int>>,
                       decltype(&IndexedValue<int>::asc_cmp)>
       maxHeap(&IndexedValue<int>::asc_cmp);
-  for (const auto &data : in_data) {
+  for (const auto &data : minSet) {
+    // std::cout << data << std::endl;
     maxHeap.push(data);
   }
-  std::cout << "Max Heap:" << std::endl;
+
+  std::set<IndexedValue<int>> oldData;
   while (!maxHeap.empty()) {
-    std::cout << maxHeap.top() << std::endl;
+    auto node = maxHeap.top();
     maxHeap.pop();
+    if (oldData.count(node)) {
+      std::cout << "old node: " << node << std::endl;
+      continue;
+    }
+
+    std::cout << "current node: " << node << std::endl;
+    system("pause");
+
+    oldData.insert(node);
+    // auto new_node = node;
+    // new_node.value++;
+    // maxHeap.push(new_node);
+    node.value--;
+    maxHeap.push(node);
   }
 
-  std::cout << "==========\n";
-
-  /* 想要达到在数据更新后重新排序的效果, 可以使用 set 的快速删除与重新插入来实现
-   */
-  std::set<IndexedValue<int>, decltype(&IndexedValue<int>::des_cmp)> maxSet(
-      IndexedValue<int>::des_cmp);
-  maxSet.insert(in_data.begin(), in_data.end());
-  std::cout << "Max Set(Original Data):" << std::endl;
-  for (const auto &data : maxSet) {
-    std::cout << data << std::endl;
-  }
-  std::cout << "==========\n";
-  // 修改元素值
-  auto it = maxSet.find(IndexedValue<int>(0, 0));
-  if (it != maxSet.end()) {
-    maxSet.erase(it);
-    maxSet.insert(IndexedValue<int>(0, 4));
-  }
-  std::cout << "Max Set(Modified Data):" << std::endl;
-  for (const auto &data : maxSet) {
-    std::cout << data << std::endl;
-  }
   return 0;
 }

@@ -2,13 +2,14 @@
  * @Author: Alan Wang leiw1006@gmail.com
  * @Date: 2023-12-13 19:14:42
  * @LastEditors: Alan Wang leiw1006@gmail.com
- * @LastEditTime: 2023-12-13 23:38:00
+ * @LastEditTime: 2023-12-14 19:49:20
  * @FilePath: \EigenExample\sparse_matrix.cpp
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置
  * 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #include <Eigen/Sparse>
 #include <cstdlib>
+#include <ios>
 #include <iostream>
 #include <unordered_set>
 #include <unsupported/Eigen/SparseExtra>
@@ -115,10 +116,27 @@ getInducedSubgraph(const Eigen::SparseMatrix<double> &G, int v) {
   return subG;
 }
 
+void deleteVert(Eigen::SparseMatrix<double> &G, int v) {
+  // 将与顶点 v 相关联的行和列对应值设为 .0
+  for (int k = G.outerIndexPtr()[v]; k < G.outerIndexPtr()[v + 1]; ++k) {
+    int colIndex = G.innerIndexPtr()[k];
+    // std::cout << "col: " << colIndex << std::endl;
+    G.coeffRef(v, colIndex) = .0;
+  }
+  for (Eigen::SparseMatrix<double>::InnerIterator it(G, v); it; ++it) {
+    // std::cout << "row: " << it.row() << std::endl;
+    G.coeffRef(it.row(), v) = .0;
+  }
+
+  // 再 prune
+  G.prune(.0);
+  G.makeCompressed();
+}
+
 int main() {
   Eigen::SparseMatrix<double> G(4, 4);
-  G.insert(0, 1) = 2.0;
-  G.insert(1, 0) = 2.0;
+  G.insert(0, 1) = 0.0; // 0.0 并不算稀疏值, 而是一个实值
+  G.insert(1, 0) = 0.0;
 
   G.insert(1, 2) = 3.0;
   G.insert(2, 1) = 3.0;
@@ -132,15 +150,28 @@ int main() {
   // traverseSparseMatrix(G);
   // std::cout << "=============\n";
 
-  printAdjToV(G, 2);
+  // printAdjToV(G, 2);
+  // std::cout << "=============\n";
+
+  // Eigen::saveMarket(G, R"(D:\CPPToyDemo\EigenExample\graph\graph.mtx)");
+
+  // Eigen::SparseMatrix<double> subG = getInducedSubgraph(G, 2);
+  // traverseSparseMatrix(subG);
+
+  // Eigen::saveMarket(subG,
+  // R"(D:\CPPToyDemo\EigenExample\graph\sub_graph.mtx)");
+
+  std::cout << "G.nonZeros() = " << G.nonZeros() << std::endl;
+  std::cout << G;
+  traverseSparseMatrix(G);
+
   std::cout << "=============\n";
 
-  Eigen::saveMarket(G, R"(D:\CPPToyDemo\EigenExample\graph\graph.mtx)");
+  deleteVert(G, 1);
 
-  Eigen::SparseMatrix<double> subG = getInducedSubgraph(G, 2);
-  traverseSparseMatrix(subG);
-
-  Eigen::saveMarket(subG, R"(D:\CPPToyDemo\EigenExample\graph\sub_graph.mtx)");
+  std::cout << "G.nonZeros() = " << G.nonZeros() << std::endl;
+  std::cout << G;
+  traverseSparseMatrix(G);
 
   return 0;
 }
