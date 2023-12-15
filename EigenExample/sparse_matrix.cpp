@@ -2,7 +2,7 @@
  * @Author: Alan Wang leiw1006@gmail.com
  * @Date: 2023-12-13 19:14:42
  * @LastEditors: Alan Wang leiw1006@gmail.com
- * @LastEditTime: 2023-12-14 19:49:20
+ * @LastEditTime: 2023-12-15 20:46:06
  * @FilePath: \EigenExample\sparse_matrix.cpp
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置
  * 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
@@ -16,29 +16,30 @@
 #include <vector>
 
 void traverseSparseMatrix(const Eigen::SparseMatrix<double> &G) {
-  // // 默认列优先，所以默认按列遍历
-  // std::cout << "colum major traverse:\n";
-  // for (int k = 0; k < G.outerSize(); ++k) {
-  //   for (Eigen::SparseMatrix<double>::InnerIterator it(G, k); it; ++it) {
-  //     std::cout << "row: " << it.row() << ", col: " << it.col()
-  //               << ", value: " << it.value() << std::endl;
-  //   }
-  // }
+  // 默认列优先，所以默认按列遍历
+  std::cout << "colum major traverse:\n";
+  for (int k = 0; k < G.outerSize(); ++k) {
+    for (Eigen::SparseMatrix<double>::InnerIterator it(G, k); it; ++it) {
+      std::cout << "row: " << it.row() << ", col: " << it.col()
+                << ", value: " << it.value() << std::endl;
+    }
+  }
 
   // std::cout << "=============\n";
 
-  // std::cout << "row major traverse:\n";
-  // 使用行迭代器遍历该行的非零元素
-  for (int i = 0; i < G.outerSize(); ++i) {
-    for (int k = G.outerIndexPtr()[i]; k < G.outerIndexPtr()[i + 1]; ++k) {
-      int colIndex = G.innerIndexPtr()[k];
-      double value = G.valuePtr()[k];
+  // // std::cout << "row major traverse:\n";
+  // // 使用行迭代器遍历该行的非零元素
+  // for (int i = 0; i < G.outerSize(); ++i) {
+  //   for (int k = G.outerIndexPtr()[i]; k < G.outerIndexPtr()[i + 1]; ++k) {
+  //     int colIndex = G.innerIndexPtr()[k];
+  //     double value = G.valuePtr()[k];
 
-      // 输出列索引和对应的值
-      std::cout << "row: " << i << ", col: " << colIndex << ", value: " << value
-                << std::endl;
-    }
-  }
+  //     // 输出列索引和对应的值
+  //     std::cout << "row: " << i << ", col: " << colIndex << ", value: " <<
+  //     value
+  //               << std::endl;
+  //   }
+  // }
 }
 
 // 输出无向图G与源节点v(准确来说是第v行所代表的节点)相邻的节点
@@ -134,7 +135,8 @@ void deleteVert(Eigen::SparseMatrix<double> &G, int v) {
 }
 
 int main() {
-  Eigen::SparseMatrix<double> G(4, 4);
+  Eigen::SparseMatrix<double> G;
+  G.conservativeResize(4, 4);
   G.insert(0, 1) = 0.0; // 0.0 并不算稀疏值, 而是一个实值
   G.insert(1, 0) = 0.0;
 
@@ -147,7 +149,7 @@ int main() {
   G.insert(3, 2) = 5.0;
   G.makeCompressed();
 
-  // traverseSparseMatrix(G);
+  traverseSparseMatrix(G);
   // std::cout << "=============\n";
 
   // printAdjToV(G, 2);
@@ -161,17 +163,17 @@ int main() {
   // Eigen::saveMarket(subG,
   // R"(D:\CPPToyDemo\EigenExample\graph\sub_graph.mtx)");
 
-  std::cout << "G.nonZeros() = " << G.nonZeros() << std::endl;
-  std::cout << G;
-  traverseSparseMatrix(G);
+  // std::cout << "G.nonZeros() = " << G.nonZeros() << std::endl;
+  // std::cout << G;
+  // traverseSparseMatrix(G);
 
-  std::cout << "=============\n";
+  // std::cout << "=============\n";
 
-  deleteVert(G, 1);
+  // deleteVert(G, 1);
 
-  std::cout << "G.nonZeros() = " << G.nonZeros() << std::endl;
-  std::cout << G;
-  traverseSparseMatrix(G);
+  // std::cout << "G.nonZeros() = " << G.nonZeros() << std::endl;
+  // std::cout << G;
+  // traverseSparseMatrix(G);
 
   return 0;
 }
