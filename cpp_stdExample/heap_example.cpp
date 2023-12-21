@@ -1,8 +1,8 @@
 /*
  * @Author: Alan Wang leiw1006@gmail.com
  * @Date: 2023-12-13 21:45:37
- * @LastEditors: Alan Wang leiw1006@gmail.com
- * @LastEditTime: 2023-12-14 16:59:09
+ * @LastEditors: WangLei
+ * @LastEditTime: 2023-12-20 13:27:52
  * @FilePath: \cpp_stdExample\heap_example.cpp
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置
  * 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
@@ -11,6 +11,7 @@
 #include <iostream>
 #include <queue>
 #include <set>
+#include <utility>
 #include <vector>
 
 template <typename T> struct IndexedValue {
@@ -58,7 +59,30 @@ std::ostream &operator<<(std::ostream &os, const IndexedValue<T1> &iv) {
 //   return a.value > b.value;
 // }
 
+void testPair() {
+  using PAIR_VAL = std::pair<int, double>;
+  std::priority_queue<IndexedValue<PAIR_VAL>,
+                      std::vector<IndexedValue<PAIR_VAL>>,
+                      decltype(&IndexedValue<PAIR_VAL>::asc_cmp)>
+      maxHeap(IndexedValue<PAIR_VAL>::asc_cmp);
+  maxHeap.emplace(0, std::make_pair(4, -0.00161704));
+  maxHeap.emplace(1, std::make_pair(2, -0.000605043));
+  maxHeap.emplace(2, std::make_pair(3, -0.000605043));
+  maxHeap.emplace(3, std::make_pair(2, -0.000605043));
+
+  while (!maxHeap.empty()) {
+    auto fro = maxHeap.top();
+    maxHeap.pop();
+    std::cout << "fro.idx = " << fro.index
+              << ", fro.value = " << fro.value.first << ", " << fro.value.second
+              << std::endl;
+  }
+}
+
 int main() {
+  testPair();
+  return 0;
+
   /* 注意 std::priority_queue 不会在数据更新后重新排序 */
 
   std::vector<IndexedValue<int>> in_data;
@@ -99,7 +123,8 @@ int main() {
   // /* 想要达到在数据更新后重新排序的效果, 可以使用 set
   // 的快速删除与重新插入来实现
   //  */
-  // std::set<IndexedValue<int>, decltype(&IndexedValue<int>::des_cmp)> maxSet(
+  // std::set<IndexedValue<int>, decltype(&IndexedValue<int>::des_cmp)>
+  // maxSet(
   //     IndexedValue<int>::des_cmp);
   // maxSet.insert(in_data.begin(), in_data.end());
   // std::cout << "Max Set(Original Data):" << std::endl;

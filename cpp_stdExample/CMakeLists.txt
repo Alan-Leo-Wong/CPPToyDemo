@@ -18,6 +18,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # target_include_directories(MC PRIVATE include)
 # add_executable(TEST main.cpp test.cpp)
 add_executable(TEST heap_example.cpp)
+# add_executable(TEST vector_reserve_resize.cpp)
 
 # target_compile_features(TEST PRIVATE cuda_std_17)
 # target_link_libraries(TEST PUBLIC Eigen3::Eigen)

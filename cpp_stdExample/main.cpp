@@ -40,5 +40,6 @@ int main() {
     const double t_after = igl::get_seconds();
     return t_after - t_before;
   };
+
   return 0;
 }
